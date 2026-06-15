@@ -29,6 +29,11 @@ import {
   type FeedbackResponse,
   type NextMethod,
 } from "@/lib/analytics";
+import {
+  logCardsViewedUpdate,
+  logFeedbackPromptShown,
+  shouldSendCardsViewedUpdate,
+} from "@/lib/serverAnalyticsClient";
 import type {
   ConversationCard,
   Difficulty,
@@ -67,6 +72,9 @@ export default function Home() {
   const [feedbackHandled, setFeedbackHandled] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const feedbackShownRef = useRef(false);
+  // Highest cards_viewed already flushed to the product-metrics endpoint, so
+  // each milestone is sent at most once.
+  const lastSentCardsRef = useRef(0);
 
   // ── Theme + persisted selections + service worker + analytics (client) ──
   useEffect(() => {
@@ -130,6 +138,19 @@ export default function Home() {
     applyTheme(theme);
   }, [theme]);
 
+  // Flush throttled cards-viewed milestones to the product-metrics endpoint
+  // (best-effort; sends at 1/5/10/20/30, then every 10).
+  useEffect(() => {
+    if (
+      cardsViewed > 0 &&
+      cardsViewed !== lastSentCardsRef.current &&
+      shouldSendCardsViewedUpdate(cardsViewed)
+    ) {
+      lastSentCardsRef.current = cardsViewed;
+      logCardsViewedUpdate({ cardsViewed, level, mode });
+    }
+  }, [cardsViewed, level, mode]);
+
   // Open the feedback prompt once, after 20 cards, while viewing cards.
   useEffect(() => {
     if (
@@ -141,8 +162,9 @@ export default function Home() {
       feedbackShownRef.current = true;
       setFeedbackOpen(true);
       trackFeedbackPromptShown();
+      logFeedbackPromptShown({ cardsViewed, level, mode });
     }
-  }, [phase, cardsViewed, feedbackHandled]);
+  }, [phase, cardsViewed, feedbackHandled, level, mode]);
 
   const toggleTheme = useCallback(() => {
     setTheme((prev) => {
