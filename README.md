@@ -40,21 +40,35 @@ npm start
 
 ```
 app/            layout, page (state machine), globals.css
+assets/         source files (e.g. icon-sources/) not shipped in public/
 components/      StartScreen, CardScreen, ConversationCard, selectors, ThemeToggle
 lib/            types, questions (the 500-card bank), cardEngine, theme, haptics
 public/         manifest.json, sw.js, icons/
-scripts/        generate-icons.mjs, validate-bank.mjs (dev tools)
+scripts/        validate-bank.mjs (dev tools)
 ```
 
 ## Question bank
 
 `lib/questions.ts` holds 500 typed `ConversationCard`s. Distribution: Mezcla 60, Rompehielos 60, Amigos 60, Conocerse 75, Cita 65, Más Profundo 65, Debate 60, Práctica 55 — each mode covering all three levels.
 
-Regenerate the PWA icons or re-check the bank with:
+Re-check the bank with:
 
 ```bash
-node scripts/generate-icons.mjs
 node scripts/validate-bank.mjs
+```
+
+## Icons
+
+The PWA icons in `public/icons/` (`icon-192.png`, `icon-512.png`, `maskable-512.png`, `apple-touch-icon.png`) are resized from `assets/icon-sources/cartita_icononly.png`. To regenerate after updating the source image:
+
+```bash
+node -e "
+const sharp = require('sharp');
+const src = 'assets/icon-sources/cartita_icononly.png';
+for (const [name, size] of [['icon-192.png',192],['icon-512.png',512],['maskable-512.png',512],['apple-touch-icon.png',180]]) {
+  sharp(src).resize(size, size).png({ compressionLevel: 9, palette: true }).toFile('public/icons/' + name);
+}
+"
 ```
 
 ## Deploy
