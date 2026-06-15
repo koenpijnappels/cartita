@@ -2,7 +2,7 @@
 
 **Cartas para hablar en español.** A calm, Mediterranean, mobile-first conversation-card app for Spanish learners and social moments. Pick a difficulty and one of 8 modes, then swipe through large question cards — reveal an English translation any time.
 
-No accounts, no backend, no AI. All 500 cards live in the codebase.
+No accounts, no backend, no AI. All 2,500 cards live in the codebase.
 
 ## Stack
 
@@ -42,19 +42,22 @@ npm start
 app/            layout, page (state machine), globals.css
 assets/         source files (e.g. icon-sources/) not shipped in public/
 components/      StartScreen, CardScreen, ConversationCard, selectors, ThemeToggle
-lib/            types, questions (the 500-card bank), cardEngine, theme, haptics
+lib/            types, questions (combines lib/cards/*), cardEngine, theme, haptics
+lib/cards/      per-mode card banks (mezcla, rompehielos, amigos, conocerse, cita, mas-profundo, debate, practica)
 public/         manifest.json, sw.js, icons/
-scripts/        validate-bank.mjs (dev tools)
+scripts/        validate-bank.mjs, analyze-bank.mjs, test-engine.mjs (dev tools)
 ```
 
 ## Question bank
 
-`lib/questions.ts` holds 500 typed `ConversationCard`s. Distribution: Mezcla 60, Rompehielos 60, Amigos 60, Conocerse 75, Cita 65, Más Profundo 65, Debate 60, Práctica 55 — each mode covering all three levels.
+`lib/questions.ts` combines the per-mode banks in `lib/cards/` into 2,500 typed `ConversationCard`s. Distribution: Mezcla 300, Rompehielos 300, Amigos 305, Conocerse 365, Cita 320, Más Profundo 335, Debate 300, Práctica 275 — each mode covering all three levels (principiante/intermedio/avanzado).
 
 Re-check the bank with:
 
 ```bash
-node scripts/validate-bank.mjs
+node scripts/validate-bank.mjs   # counts, coverage, uniqueness
+node scripts/analyze-bank.mjs    # accents, duplicates, punctuation checks
+node scripts/test-engine.mjs     # card engine behavior
 ```
 
 ## Icons

@@ -1,16 +1,30 @@
 // Throwaway runtime test of the card engine against the real bank.
 // Run: node scripts/test-engine.mjs
-import { register } from "node:module";
-import { pathToFileURL } from "node:url";
 
 // Allow importing .ts via Node's built-in type stripping (Node 22.6+/24).
-// Falls back gracefully if not needed.
-let pickNextCard, QUESTIONS, matchingCards, targetIntensity;
+let pickNextCard, matchingCards, targetIntensity, QUESTIONS;
 try {
   ({ pickNextCard, matchingCards, targetIntensity } = await import(
     "../lib/cardEngine.ts"
   ));
-  ({ QUESTIONS } = await import("../lib/questions.ts"));
+  const { MEZCLA_CARDS } = await import("../lib/cards/mezcla.ts");
+  const { ROMPEHIELOS_CARDS } = await import("../lib/cards/rompehielos.ts");
+  const { AMIGOS_CARDS } = await import("../lib/cards/amigos.ts");
+  const { CONOCERSE_CARDS } = await import("../lib/cards/conocerse.ts");
+  const { CITA_CARDS } = await import("../lib/cards/cita.ts");
+  const { MAS_PROFUNDO_CARDS } = await import("../lib/cards/mas-profundo.ts");
+  const { DEBATE_CARDS } = await import("../lib/cards/debate.ts");
+  const { PRACTICA_CARDS } = await import("../lib/cards/practica.ts");
+  QUESTIONS = [
+    ...MEZCLA_CARDS,
+    ...ROMPEHIELOS_CARDS,
+    ...AMIGOS_CARDS,
+    ...CONOCERSE_CARDS,
+    ...CITA_CARDS,
+    ...MAS_PROFUNDO_CARDS,
+    ...DEBATE_CARDS,
+    ...PRACTICA_CARDS,
+  ];
 } catch (e) {
   console.error("Could not import TS modules directly:", e.message);
   process.exit(2);
