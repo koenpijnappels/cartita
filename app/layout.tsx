@@ -28,10 +28,6 @@ export const metadata: Metadata = {
     title: "Cartita",
     statusBarStyle: "default",
   },
-  icons: {
-    icon: "/icons/icon-192.png",
-    apple: "/icons/apple-touch-icon.png",
-  },
 };
 
 export const viewport: Viewport = {
