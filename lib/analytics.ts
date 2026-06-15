@@ -17,6 +17,7 @@
 
 import { track } from "@vercel/analytics";
 import { getSessionId } from "./session";
+import type { DonationOptionId } from "./donations";
 import type { ConversationCard, Difficulty, Mode } from "./types";
 
 /** Method by which the user advanced to the next card. */
@@ -24,6 +25,9 @@ export type NextMethod = "button" | "swipe";
 
 /** Possible answers to the after-20-cards feedback prompt. */
 export type FeedbackResponse = "yes" | "okay" | "idea" | "dismissed";
+
+/** Where a donation interaction originated. */
+export type DonationSource = "positive_feedback" | "footer";
 
 /** Stable event names. Kept as a union so typos surface at compile time. */
 export type AnalyticsEvent =
@@ -39,7 +43,11 @@ export type AnalyticsEvent =
   | "change_level_clicked"
   | "feedback_prompt_shown"
   | "feedback_response"
-  | "share_clicked";
+  | "share_clicked"
+  | "donation_prompt_shown"
+  | "donation_prompt_dismissed"
+  | "donation_option_clicked"
+  | "donation_footer_clicked";
 
 /** Vercel allows flat primitive property values only. */
 type EventProperties = Record<string, string | number | boolean | null>;
@@ -200,4 +208,26 @@ export function trackFeedbackResponse(response: FeedbackResponse): void {
 
 export function trackShareClicked(source: string): void {
   trackEvent("share_clicked", { source });
+}
+
+// ── Donations ────────────────────────────────────────────────────────────--
+
+export function trackDonationPromptShown(source: DonationSource): void {
+  trackEvent("donation_prompt_shown", { source });
+}
+
+export function trackDonationPromptDismissed(source: DonationSource): void {
+  trackEvent("donation_prompt_dismissed", { source });
+}
+
+export function trackDonationOptionClicked(
+  option: DonationOptionId,
+  amount: 3 | 5 | 10,
+  source: DonationSource
+): void {
+  trackEvent("donation_option_clicked", { option, amount, source });
+}
+
+export function trackDonationFooterClicked(): void {
+  trackEvent("donation_footer_clicked", { source: "start_footer" });
 }

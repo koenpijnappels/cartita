@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { submitSuggestion, type FeedbackResponse } from "@/lib/analytics";
+import { canShowDonationPrompt } from "@/lib/donations";
+import DonationPrompt from "./DonationPrompt";
 import type { Difficulty, Mode } from "@/lib/types";
 
 type Props = {
@@ -17,7 +19,13 @@ type Props = {
   mode: Mode | null;
 };
 
-type View = "ask" | "thanks-yes" | "thanks-okay" | "idea-form" | "idea-sent";
+type View =
+  | "ask"
+  | "donation"
+  | "thanks-yes"
+  | "thanks-okay"
+  | "idea-form"
+  | "idea-sent";
 
 /**
  * Small, calm feedback prompt shown once per session after 20 cards.
@@ -46,7 +54,9 @@ export default function FeedbackPrompt({
   }
 
   function handleYes() {
-    answer("yes", "thanks-yes");
+    // Positive feedback is the only trigger for the donation prompt. If
+    // donations are off / in cooldown / unconfigured, fall back to the thanks.
+    answer("yes", canShowDonationPrompt() ? "donation" : "thanks-yes");
   }
 
   function handleOkay() {
@@ -150,6 +160,20 @@ export default function FeedbackPrompt({
                 Tengo una idea
               </button>
             </div>
+          </motion.div>
+        )}
+
+        {view === "donation" && (
+          <motion.div
+            key="donation"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <DonationPrompt
+              source="positive_feedback"
+              onDismiss={() => setView("thanks-yes")}
+            />
           </motion.div>
         )}
 

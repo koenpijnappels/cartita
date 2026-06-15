@@ -1,6 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { trackDonationFooterClicked } from "@/lib/analytics";
+import {
+  donationsEnabled,
+  getKofiProfileUrl,
+  openDonationUrl,
+} from "@/lib/donations";
 import type { Difficulty, Mode, Theme } from "@/lib/types";
 import DifficultySelector from "./DifficultySelector";
 import ModeSelector from "./ModeSelector";
@@ -26,6 +32,16 @@ export default function StartScreen({
   onStart,
 }: Props) {
   const ready = level !== null && mode !== null;
+
+  // Subtle, user-initiated support link. Only when donations are enabled and a
+  // Ko-fi profile URL is configured. Stays available even during cooldown.
+  const supportUrl = donationsEnabled() ? getKofiProfileUrl() : null;
+
+  function handleSupport() {
+    if (!supportUrl) return;
+    trackDonationFooterClicked();
+    openDonationUrl(supportUrl);
+  }
 
   return (
     <div className="safe-top safe-bottom mx-auto flex min-h-[100dvh] w-full max-w-md flex-col px-5 pb-6">
@@ -73,13 +89,25 @@ export default function StartScreen({
         {ready ? "Empezar" : "Elige nivel y modo"}
       </button>
 
-      <footer className="mt-4 text-center">
+      <footer className="mt-4 flex items-center justify-center gap-3 text-xs text-muted">
         <Link
           href="/privacidad"
-          className="text-xs text-muted underline-offset-4 transition-colors hover:text-ink hover:underline"
+          className="underline-offset-4 transition-colors hover:text-ink hover:underline"
         >
           Privacidad
         </Link>
+        {supportUrl && (
+          <>
+            <span aria-hidden="true">·</span>
+            <button
+              type="button"
+              onClick={handleSupport}
+              className="underline-offset-4 transition-colors hover:text-ink hover:underline"
+            >
+              Apoyar Cartita
+            </button>
+          </>
+        )}
       </footer>
     </div>
   );
