@@ -328,6 +328,7 @@ export default function Home() {
       card={currentCard}
       mode={mode}
       level={level}
+      cardNumber={index + 1}
       theme={theme}
       showTranslation={showTranslation}
       canGoBack={canGoBack}

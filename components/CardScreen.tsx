@@ -17,6 +17,8 @@ type Props = {
   card: Card | null;
   mode: Mode;
   level: Difficulty;
+  /** Position of the current card within this flow (1-based). */
+  cardNumber: number;
   theme: Theme;
   showTranslation: boolean;
   canGoBack: boolean;
@@ -34,6 +36,7 @@ export default function CardScreen({
   card,
   mode,
   level,
+  cardNumber,
   theme,
   showTranslation,
   canGoBack,
@@ -66,7 +69,10 @@ export default function CardScreen({
             <span className="text-sm font-semibold text-ink">
               {modeLabel(mode)}
             </span>
-            <span className="text-xs text-muted">{levelLabel(level)}</span>
+            <span className="text-xs text-muted">
+              {levelLabel(level)}
+              {card ? ` · Carta ${cardNumber}` : ""}
+            </span>
           </div>
           <ThemeToggle theme={theme} onToggle={onToggleTheme} />
         </div>
@@ -144,7 +150,7 @@ export default function CardScreen({
               : "cursor-not-allowed bg-line/60 text-muted",
           ].join(" ")}
         >
-          Siguiente
+          Otra carta
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M9 18l6-6-6-6" />
           </svg>

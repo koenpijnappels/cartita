@@ -86,28 +86,37 @@ export default function StartScreen({
             : "cursor-not-allowed bg-line/60 text-muted",
         ].join(" ")}
       >
-        {ready ? "Empezar" : "Elige nivel y modo"}
+        {ready ? "Sacar una cartita" : "Elige nivel y modo"}
       </button>
 
-      <footer className="mt-4 flex items-center justify-center gap-3 text-xs text-muted">
-        <Link
-          href="/privacidad"
-          className="underline-offset-4 transition-colors hover:text-ink hover:underline"
-        >
-          Privacidad
-        </Link>
-        {supportUrl && (
-          <>
-            <span aria-hidden="true">·</span>
-            <button
-              type="button"
-              onClick={handleSupport}
-              className="underline-offset-4 transition-colors hover:text-ink hover:underline"
-            >
-              Apoyar Cartita
-            </button>
-          </>
-        )}
+      <footer className="mt-4 flex flex-col items-center gap-3 text-center">
+        <p className="text-balance text-xs leading-relaxed text-muted/80">
+          Cartita es un proyecto personal hecho con cariño.
+          <br />
+          Sin cuentas. Sin suscripciones. Sin anuncios.
+          <br />
+          Solo buenas preguntas para hablar más español.
+        </p>
+        <div className="flex items-center justify-center gap-3 text-xs text-muted">
+          <Link
+            href="/privacidad"
+            className="underline-offset-4 transition-colors hover:text-ink hover:underline"
+          >
+            Privacidad
+          </Link>
+          {supportUrl && (
+            <>
+              <span aria-hidden="true">·</span>
+              <button
+                type="button"
+                onClick={handleSupport}
+                className="underline-offset-4 transition-colors hover:text-ink hover:underline"
+              >
+                Apoyar Cartita
+              </button>
+            </>
+          )}
+        </div>
       </footer>
     </div>
   );
