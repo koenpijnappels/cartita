@@ -77,3 +77,17 @@ for (const [name, size] of [['icon-192.png',192],['icon-512.png',512],['maskable
 ## Deploy
 
 Standard Next.js app — deploy to **Vercel** with zero config (no server/runtime dependencies).
+
+### Abuse protection for `/api/*`
+
+The `/api/*` routes (events, suggestions, analytics/session) are public and
+write to Neon, which bills by usage. Two layers ship in code via
+[`middleware.ts`](middleware.ts): a same-origin guard (cross-site POSTs get
+`403`) and a best-effort per-IP burst guard (`429`). The burst guard is a
+backstop only — serverless instances are isolated, so it caps per-instance
+bursts, not global volume.
+
+The durable, cross-instance layer must be configured once after deploy:
+**Vercel → Project → Firewall** → add a rate-limit rule on path `/api/*`
+(e.g. ~60 requests/min per IP → challenge or deny). This is dashboard-managed,
+not committed code.
